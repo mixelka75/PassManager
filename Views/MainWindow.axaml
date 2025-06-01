@@ -1,0 +1,130 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:PasswordManager.ViewModels"
+        xmlns:models="using:PasswordManager.Models"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+        Width="1000" Height="700"
+        MinWidth="800" MinHeight="600"
+        x:Class="PasswordManager.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Менеджер паролей"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="320,*" Margin="15">
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,15">
+            <TextBox Grid.Row="0" Grid.Column="0" Watermark="Поиск..." Text="{Binding SearchText}" Margin="0,0,10,0" Height="35" FontSize="14"/>
+            <Button Grid.Row="0" Grid.Column="1" Content="Добавить" Command="{Binding AddNewEntryCommand}" Margin="0,0,10,0" Height="35" Width="90" FontSize="12" />
+            <Button Grid.Row="0" Grid.Column="2" Content="Изменить" Command="{Binding EditEntryCommand}" IsEnabled="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}" Margin="0,0,10,0" Height="35" Width="90" FontSize="12" />
+            <Button Grid.Row="0" Grid.Column="3" Content="Удалить" Command="{Binding DeleteEntryCommand}" IsEnabled="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}" Height="35" Width="90" FontSize="12" />
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Категория:" Margin="0,15,0,5" FontSize="14" FontWeight="Bold"/>
+            <ComboBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" HorizontalAlignment="Stretch" Margin="0,30,0,0" Height="35" FontSize="14"/>
+        </Grid>
+        
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Margin="0,0,15,0">
+            <ListBox ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}" Margin="8">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:PasswordEntry">
+                        <Border Padding="12" Margin="0,3" Background="Transparent" CornerRadius="5" MinHeight="60">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="14" />
+                                <TextBlock Text="{Binding Username}" FontSize="12" Opacity="0.7" Margin="0,2,0,0" />
+                                <TextBlock Text="{Binding Category}" FontSize="10" Opacity="0.5" Margin="0,2,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+        
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" IsVisible="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ScrollViewer Margin="25">
+                <StackPanel Spacing="20">
+                    <TextBlock Text="{Binding SelectedEntry.Title}" FontSize="24" FontWeight="Bold" />
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Логин:" FontWeight="Bold" FontSize="16" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="12" Background="White">
+                                <TextBlock Text="{Binding SelectedEntry.Username}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="Black" />
+                            </Border>
+                            <Button Grid.Column="1" Width="45" Height="45" Margin="8,0,0,0" Command="{Binding CopyUsernameCommand}" 
+                                    ToolTip.Tip="Копировать логин" Background="#4A90E2" Foreground="White" CornerRadius="4">
+                                <TextBlock Text="📋" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Пароль:" FontWeight="Bold" FontSize="16" />
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="12" Background="White">
+                                <TextBlock Text="{Binding PasswordDisplay}" FontSize="14" VerticalAlignment="Center" FontFamily="Consolas" Foreground="Black" />
+                            </Border>
+                            <Button Grid.Column="1" Width="45" Height="45" Margin="8,0,0,0" Command="{Binding TogglePasswordVisibilityCommand}" 
+                                    ToolTip.Tip="Показать/скрыть пароль" Background="#7B68EE" Foreground="White" CornerRadius="4">
+                                <TextBlock Text="{Binding ShowPasswordButtonText}" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                            <Button Grid.Column="2" Width="45" Height="45" Margin="8,0,0,0" Command="{Binding CopyPasswordCommand}" 
+                                    ToolTip.Tip="Копировать пароль" Background="#4A90E2" Foreground="White" CornerRadius="4">
+                                <TextBlock Text="📋" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="8" IsVisible="{Binding SelectedEntry.Url, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="URL:" FontWeight="Bold" FontSize="16" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="12" Background="White">
+                                <TextBlock Text="{Binding SelectedEntry.Url}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="Black" />
+                            </Border>
+                            <Button Grid.Column="1" Width="45" Height="45" Margin="8,0,0,0" Command="{Binding CopyUrlCommand}" 
+                                    ToolTip.Tip="Копировать URL" Background="#4A90E2" Foreground="White" CornerRadius="4">
+                                <TextBlock Text="📋" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="8" IsVisible="{Binding SelectedEntry.Category, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="Категория:" FontWeight="Bold" FontSize="16" />
+                        <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="12" Background="White">
+                            <TextBlock Text="{Binding SelectedEntry.Category}" FontSize="14" Foreground="Black" />
+                        </Border>
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="8" IsVisible="{Binding SelectedEntry.Notes, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="Заметки:" FontWeight="Bold" FontSize="16" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="4" Padding="12" Background="White" MinHeight="80">
+                                <TextBlock Text="{Binding SelectedEntry.Notes}" TextWrapping="Wrap" FontSize="14" Foreground="Black" />
+                            </Border>
+                            <Button Grid.Column="1" Width="45" Height="45" Margin="8,0,0,0" VerticalAlignment="Top" Command="{Binding CopyNotesCommand}" 
+                                    ToolTip.Tip="Копировать заметки" Background="#4A90E2" Foreground="White" CornerRadius="4">
+                                <TextBlock Text="📋" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="5" Margin="0,20,0,0">
+                        <TextBlock Text="{Binding SelectedEntry.Created, StringFormat='Создано: {0:dd.MM.yyyy HH:mm}'}" FontSize="12" Opacity="0.7" />
+                        <TextBlock Text="{Binding SelectedEntry.Modified, StringFormat='Изменено: {0:dd.MM.yyyy HH:mm}'}" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="15" Margin="0,25,0,0">
+                        <Button Content="Редактировать" Command="{Binding EditEntryCommand}" Width="140" Height="40" FontSize="14" Background="#50C878" Foreground="White" CornerRadius="4" />
+                        <Button Content="Генератор паролей" Command="{Binding GeneratePasswordCommand}" Width="160" Height="40" FontSize="14" Background="#FF6B35" Foreground="White" CornerRadius="4" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+        
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                   IsVisible="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNull}}">
+            <TextBlock Text="🔐" FontSize="64" HorizontalAlignment="Center" Opacity="0.3" />
+            <TextBlock Text="Выберите запись из списка" FontSize="18" HorizontalAlignment="Center" Opacity="0.7" Margin="0,15,0,0" />
+            <TextBlock Text="или создайте новую" FontSize="16" HorizontalAlignment="Center" Opacity="0.5" />
+        </StackPanel>
+    </Grid>
+</Window>

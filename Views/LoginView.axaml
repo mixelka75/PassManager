@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:PasswordManager.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="400"
+        Width="450" Height="400"
+        MinWidth="400" MinHeight="350"
+        x:Class="PasswordManager.Views.LoginView"
+        x:DataType="vm:LoginViewModel"
+        Title="Вход в менеджер паролей"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="30">
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Менеджер паролей" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="1" Spacing="15">
+            <TextBlock Text="Введите мастер-пароль:" FontSize="14" />
+            <TextBox PasswordChar="•" Text="{Binding MasterPassword}" Height="35" FontSize="14" 
+                     Background="White" Foreground="White"/>
+            
+            <CheckBox IsChecked="{Binding IsNewDatabase}" Content="Создать новую базу данных" Margin="0,15,0,0" FontSize="14" />
+            
+            <StackPanel IsVisible="{Binding IsNewDatabase}" Spacing="15" Margin="0,15,0,0">
+                <TextBlock Text="Подтвердите мастер-пароль:" FontSize="14" />
+                <TextBox PasswordChar="•" Text="{Binding ConfirmPassword}" Height="35" FontSize="14" 
+                         Background="White" Foreground="White"/>
+            </StackPanel>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15" Margin="0,30,0,0">
+            <Button Content="Войти" Command="{Binding LoginCommand}" Width="120" Height="40" FontSize="14" />
+        </StackPanel>
+    </Grid>
+</Window>
